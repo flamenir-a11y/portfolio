@@ -709,6 +709,7 @@ button.doc-link {
    the auto-fill grid (which made 2 items only ~1/5 of the card width). */
 .sub-items--single { grid-template-columns: 1fr; }
 .sub-items--pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.sub-items--trio { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 @media (max-width: 640px) {
   .sub-items--pair { grid-template-columns: 1fr; }
 }
