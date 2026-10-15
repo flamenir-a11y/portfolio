@@ -19,6 +19,9 @@
   --font-heading: 'Suez One', 'Frank Ruhl Libre', 'Times New Roman', serif;
   --font-body: 'Assistant', 'Segoe UI', sans-serif;
 
+  /* 15% cream wash over every page-background image (approved 16.10.2026) */
+  --bg-wash: linear-gradient(rgba(247, 242, 233, 0.15), rgba(247, 242, 233, 0.15));
+
   --radius-lg: 16px;
   --radius-md: 12px;
   --radius-sm: 6px;
@@ -34,7 +37,7 @@ html {
 body {
   margin: 0;
   background-color: var(--color-bg);
-  background-image: url('../assets/site-bg.jpg');
+  background-image: var(--bg-wash), url('../assets/site-bg.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -48,10 +51,10 @@ body {
    used for its hero) as a single full-bleed image — the new square
    compositions spread color to every edge, so a plain cover crop no
    longer loses anything meaningful. */
-body.page-home { background-image: url('../assets/hero-banner.jpg'); }
-body.page-academia { background-image: url('../assets/hero-academia.jpg'); }
-body.page-content { background-image: url('../assets/hero-content.jpg'); }
-body.page-art { background-image: url('../assets/hero-art.jpg'); }
+body.page-home { background-image: var(--bg-wash), url('../assets/hero-banner.jpg'); }
+body.page-academia { background-image: var(--bg-wash), url('../assets/hero-academia.jpg'); }
+body.page-content { background-image: var(--bg-wash), url('../assets/hero-content.jpg'); }
+body.page-art { background-image: var(--bg-wash), url('../assets/hero-art.jpg'); }
 
 img, video { max-width: 100%; display: block; }
 
@@ -412,7 +415,7 @@ body.page-home .container { max-width: 1400px; }
   color: color-mix(in srgb, var(--accent, #3A362E) 82%, #000);
 }
 .sub-item .work-meta { font-size: 0.8rem; margin: -2px 0 6px; }
-.work-card p { color: var(--color-text-muted); font-size: 0.95rem; }
+.work-card p { color: #4F493F; font-size: 1.0625rem; }
 .work-card .tags {
   display: flex;
   gap: 8px;
@@ -456,7 +459,7 @@ body.page-home .container { max-width: 1400px; }
   padding: 14px 16px;
 }
 .sub-item h4 { margin: 0 0 6px; font-size: 1rem; font-weight: 500; }
-.sub-item p { margin: 0 0 10px; font-size: 0.88rem; color: var(--color-text-muted); }
+.sub-item p { margin: 0 0 10px; font-size: 1rem; color: #4F493F; }
 
 /* Account-sites thumbnails: bigger, evenly centered regardless of how many
    fit per row (auto-fit collapses empty tracks instead of leaving them
@@ -478,8 +481,7 @@ body.page-home .container { max-width: 1400px; }
 .sub-items--uniform .sub-item {
   display: flex;
   flex-direction: column;
-  height: 520px;
-  overflow-y: auto;
+  min-height: 520px;
 }
 .sub-items--uniform .sub-item .tags { margin-top: auto; padding-top: 10px; }
 
@@ -723,4 +725,117 @@ button.doc-link {
   aspect-ratio: 9 / 16;
   width: min(100%, calc(min(78vh, 820px) * 9 / 16));
   margin-inline: auto;
+}
+
+/* ===== Stage 1 additions (nav on phones, contact pill, jump links, captions) ===== */
+.site-header nav ul { flex-wrap: wrap; align-items: center; }
+.site-header nav a.nav-contact {
+  font-size: 1.1rem;
+  padding: 4px 16px;
+  border: 1.5px solid rgba(58, 54, 46, 0.55);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+}
+.site-header nav a.nav-contact:hover,
+.site-header nav a.nav-contact:focus-visible {
+  border-color: var(--color-teal);
+  background: #fff;
+}
+@media (max-width: 640px) {
+  .site-header .container { flex-wrap: wrap; row-gap: 8px; }
+  .site-logo { flex: 1 0 100%; }
+  .site-header--home .container { justify-content: flex-start; }
+  .site-header nav ul { gap: 16px 16px; }
+  .site-header nav a { font-size: 1.05rem; }
+  .site-header nav a.nav-contact { font-size: 1rem; padding: 3px 12px; }
+}
+
+.jump-links ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin: 0 0 28px;
+  padding: 0;
+}
+.jump-links a {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent, #3A362E) 45%, transparent);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+.jump-links a:hover,
+.jump-links a:focus-visible { border-color: var(--accent, var(--color-teal)); background: #fff; }
+.work-card { scroll-margin-top: 16px; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+#contact { scroll-margin-top: 20px; }
+
+.work-card .media-caption {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+.media-row .media-embed { margin-top: 0; }
+
+/* ===== Viewer: actions (new tab / full screen) and the invisible text layer ===== */
+.viewer-actions { display: flex; align-items: center; gap: 8px; }
+.viewer-newtab,
+.viewer-expand {
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text);
+  text-decoration: none;
+  background: var(--color-bg);
+  border: 0.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 5px 12px;
+  cursor: pointer;
+}
+.viewer-newtab[hidden], .viewer-expand[hidden] { display: none; }
+.viewer-newtab:hover, .viewer-newtab:focus-visible,
+.viewer-expand:hover, .viewer-expand:focus-visible { border-color: var(--color-teal); }
+
+.viewer-overlay.is-expanded { padding: 0; background: var(--color-bg); }
+.viewer-overlay.is-expanded .viewer-box { width: 100%; height: 100%; border-radius: 0; }
+
+.textLayer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  line-height: 1;
+  text-align: initial;
+  transform-origin: 0 0;
+}
+.textLayer span, .textLayer br {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+.textLayer ::selection { background: rgba(28, 107, 107, 0.3); }
+@media (max-width: 640px) {
+  .viewer-newtab, .viewer-expand { font-size: 0.8rem; padding: 4px 8px; }
+  .viewer-title { font-size: 0.85rem; }
+}
+
+/* Phones: the category logo sits at the top-left, beside the back link
+   (position marked by Shelhevet, 16.10.2026) instead of above the heading. */
+@media (max-width: 640px) {
+  .page-hero { position: relative; }
+  .page-hero .icon-badge,
+  .page-hero--art .icon-badge {
+    position: absolute;
+    left: 26px;
+    top: -106px;
+    transform: none;
+  }
 }

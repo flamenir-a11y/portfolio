@@ -36,6 +36,7 @@
         <li><a href="content-development.html" aria-current="page">פיתוח תוכן</a></li>
         <li><a href="art.html">אמנות</a></li>
         <li><a href="about.html">אודות</a></li>
+        <li><a class="nav-contact" href="about.html#contact">יצירת קשר</a></li>
       </ul>
     </nav>
   </div>
@@ -54,25 +55,41 @@
       <span class="icon-badge"><img class="icon" src="assets/logo-content.png" alt="" aria-hidden="true"></span>
     </div>
 
+    <nav class="jump-links" aria-label="קפיצה לקבוצות העבודות בעמוד">
+      <ul>
+        <li><a href="#escape-room">חדר בריחה</a></li>
+        <li><a href="#sachbak">סחבק</a></li>
+        <li><a href="#math-sites">אתרי חשבון</a></li>
+        <li><a href="#plays-films">סרטונים ומחזות</a></li>
+        <li><a href="#ted">TED-ברו את זה</a></li>
+        <li><a href="#curricula">תוכניות לימוד</a></li>
+      </ul>
+    </nav>
+
     <section class="work-list" aria-label="רשימת פרויקטים">
 
-      <article class="work-card" style="grid-column: 1 / -1;">
+      <article id="escape-room" class="work-card" style="grid-column: 1 / -1;">
         <h3 aria-level="2">חדר בריחה דיגיטלי — המוח</h3>
         <p class="work-meta">2025–2026</p>
         <p>חדר בריחה ללמידה על מבנה המוח ותפקודו, המשלב שש תחנות של חידות, משחקים ומשימות. סימולטור מוח אינטראקטיבי, משחק בנושא האמיגדלה וקלפי רביעיות מזמינים את המשתתפים ללמוד דרך התנסות ופתרון אתגרים.</p>
         <div class="media-row">
-          <div class="media-embed media-embed--video">
-            <video controls controlsList="nodownload" disablePictureInPicture preload="none" poster="assets/thumbs/titlecard-escape-intro.jpg">
-              <source src="media/פיתוח תוכן/חדר בריחה/VIDEOS/סרטון פתיחה חדר בריחה.mp4" type="video/mp4">
-            </video>
+          <div class="media-item">
+            <p class="media-caption">סרטון פתיחה</p>
+            <div class="media-embed media-embed--video">
+              <video controls controlsList="nodownload" disablePictureInPicture preload="none" poster="assets/thumbs/titlecard-escape-intro.jpg">
+                <source src="media/פיתוח תוכן/חדר בריחה/VIDEOS/סרטון פתיחה חדר בריחה.mp4" type="video/mp4">
+              </video>
+            </div>
           </div>
-          <div class="media-embed media-embed--video">
-            <video controls controlsList="nodownload" disablePictureInPicture preload="none" poster="assets/thumbs/titlecard-escape-demo.jpg">
-              <source src="media/פיתוח תוכן/חדר בריחה/חדר בריחה - תיעוד/20260128_143455.mp4" type="video/mp4">
-            </video>
+          <div class="media-item">
+            <p class="media-caption">הדגמת המשחק</p>
+            <div class="media-embed media-embed--video">
+              <video controls controlsList="nodownload" disablePictureInPicture preload="none" poster="assets/thumbs/titlecard-escape-demo.jpg">
+                <source src="media/פיתוח תוכן/חדר בריחה/חדר בריחה - תיעוד/20260128_143455.mp4" type="video/mp4">
+              </video>
+            </div>
           </div>
         </div>
-        <p style="font-size:0.85rem; color:var(--color-text-muted); margin:4px 0 12px;">מימין: סרטון פתיחה. משמאל: הדגמת המשחק על גבי הלוח.</p>
         <div class="doc-links-row">
           <button type="button" class="doc-link" data-viewer-type="pdf" data-viewer-src="media/פיתוח תוכן/חדר בריחה/חדר בריחה - תיעוד/חדר בריחה - המוח.pdf" data-viewer-title="חדר בריחה — המוח: סיכום הפרויקט">
             <span aria-hidden="true">📄</span> סיכום הפרויקט
@@ -90,7 +107,7 @@
         </div>
       </article>
 
-      <article class="work-card" style="grid-column: 1 / -1;">
+      <article id="sachbak" class="work-card" style="grid-column: 1 / -1;">
         <h3 aria-level="2">פיתוח תוכן לתוכנית „סחבק” — עמותת „עדי”</h3>
         <p class="work-meta">2026</p>
         <p>פיתוח מערכי פעילות, משחקים ויישומים מותאמים לתוכנית המפגישה בני נוער עם ובלי צרכים מיוחדים. הפעילויות עוסקות בהיכרות, אמון, חוזקות אישיות ועבודת צוות, ומשלבות יצירה והתנסות בכלי בינה מלאכותית.</p>
@@ -177,7 +194,7 @@
         </div>
       </article>
 
-      <article class="work-card" style="grid-column: 1 / -1;">
+      <article id="math-sites" class="work-card" style="grid-column: 1 / -1;">
         <h3 aria-level="2">אתרי חשבון — בארץ חשבניה, כישופי מספרלה ו־Numberland</h3>
         <p class="work-meta">2020</p>
         <p>שלושה אתרים אינטראקטיביים ללימוד חשבון לגילאי 6–9, שפותחו כמענה ללמידה מרחוק. כל אתר מציע עולם סיפורי משלו, המשלב דמויות, הסברים, דפי עבודה ומשחקי תרגול ללמידה עצמאית בקצב אישי.</p>
@@ -213,7 +230,7 @@
         <div class="tags" style="margin-top:14px;"><span class="tag">אתר אינטרנט</span><span class="tag">חשבון</span></div>
       </article>
 
-      <article class="work-card" style="grid-column: 1 / -1;">
+      <article id="plays-films" class="work-card" style="grid-column: 1 / -1;">
         <h3 aria-level="2">סרטונים ומחזות</h3>
         <p>תסריטים ומחזות שנכתבו, בוימו והופקו במסגרת עבודתי החינוכית. כדי לשמור על פרטיות התלמידים, סרטונים שבהם הם מופיעים אינם מוצגים — במקומם מוצגת כרזת הפתיחה בלבד.</p>
 
@@ -279,7 +296,7 @@
         </div>
       </article>
 
-      <article class="work-card" style="grid-column: 1 / -1;">
+      <article id="ted" class="work-card" style="grid-column: 1 / -1;">
         <h3 aria-level="2">TED-ברו את זה</h3>
         <p class="work-meta">2018</p>
         <p>קורס סטוריטלינג לגיל השלישי, המלווה את המשתתפים בהבאת סיפורם האישי לבמה. הקורס משלב כתיבה, דרמה, אימפרוביזציה, שפת גוף ושיתוף קבוצתי, לפיתוח הביטוי האישי ומיומנויות ההצגה בפני קהל.</p>
@@ -288,7 +305,7 @@
         </button>
       </article>
 
-      <article class="work-card" style="grid-column: 1 / -1;">
+      <article id="curricula" class="work-card" style="grid-column: 1 / -1;">
         <h3 aria-level="2">תוכניות לימוד מלאות</h3>
         <p class="work-meta">תשע"ו · 2015–2016</p>
         <p>ארבע תוכניות לימוד שנכתבו במלואן, תשע"ו.</p>

@@ -3,7 +3,8 @@
   var PAGE_RENDER_TIMEOUT = 10000;
   var ZOOM_MIN = 0.6, ZOOM_MAX = 2.4, ZOOM_STEP = 0.2;
   var overlay, body, titleEl, closeBtn, pager, navGroup, zoomGroup,
-      prevBtn, nextBtn, pageIndicator, zoomOutBtn, zoomInBtn, zoomLevelEl, lastFocused;
+      prevBtn, nextBtn, pageIndicator, zoomOutBtn, zoomInBtn, zoomLevelEl, lastFocused,
+      newTabLink, expandBtn, expanded = false, currentTitle = '';
 
   function ensurePdfJs(cb) {
     if (window.pdfjsLib) { cb(); return; }
@@ -28,7 +29,11 @@
       '<div class="viewer-box">' +
         '<div class="viewer-bar">' +
           '<span class="viewer-title"></span>' +
-          '<button type="button" class="viewer-close" aria-label="סגירה">✕</button>' +
+          '<div class="viewer-actions">' +
+            '<a class="viewer-newtab" target="_blank" rel="noopener" hidden aria-label="פתיחה בלשונית נפרדת">לשונית חדשה ↗</a>' +
+            '<button type="button" class="viewer-expand" aria-pressed="false" hidden>מסך מלא</button>' +
+            '<button type="button" class="viewer-close" aria-label="סגירה">✕</button>' +
+          '</div>' +
         '</div>' +
         '<div class="viewer-body"></div>' +
         '<div class="viewer-pager" hidden>' +
@@ -39,7 +44,7 @@
           '</div>' +
           '<div class="viewer-nav">' +
             '<button type="button" class="viewer-prev">‹ הקודם</button>' +
-            '<span class="viewer-page-indicator"></span>' +
+            '<span class="viewer-page-indicator" aria-live="polite"></span>' +
             '<button type="button" class="viewer-next">הבא ›</button>' +
           '</div>' +
         '</div>' +
@@ -48,6 +53,8 @@
     body = overlay.querySelector('.viewer-body');
     titleEl = overlay.querySelector('.viewer-title');
     closeBtn = overlay.querySelector('.viewer-close');
+    newTabLink = overlay.querySelector('.viewer-newtab');
+    expandBtn = overlay.querySelector('.viewer-expand');
     pager = overlay.querySelector('.viewer-pager');
     navGroup = overlay.querySelector('.viewer-nav');
     zoomGroup = overlay.querySelector('.viewer-zoom');
@@ -58,6 +65,11 @@
     zoomInBtn = overlay.querySelector('.viewer-zoom-in');
     zoomLevelEl = overlay.querySelector('.viewer-zoom-level');
     closeBtn.addEventListener('click', closeViewer);
+    expandBtn.addEventListener('click', function () { setExpanded(!expanded); });
+    document.addEventListener('fullscreenchange', function () {
+      // Leaving native fullscreen (e.g. with Esc) also leaves the expanded layout.
+      if (!document.fullscreenElement && expanded) setExpanded(false);
+    });
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeViewer(); });
     document.addEventListener('keydown', function (e) {
       if (!overlay || overlay.hidden) return;
@@ -88,7 +100,27 @@
     zoomOutBtn.addEventListener('click', function () { zoomBy(-ZOOM_STEP); });
   }
 
+  // "Full screen" for documents: fills the window (CSS) and, where the browser
+  // supports it, real fullscreen. Never exposes a download/print control.
+  function setExpanded(on) {
+    expanded = on;
+    overlay.classList.toggle('is-expanded', on);
+    expandBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    expandBtn.textContent = on ? 'יציאה ממסך מלא' : 'מסך מלא';
+    if (on) {
+      if (overlay.requestFullscreen && !document.fullscreenElement) {
+        try { overlay.requestFullscreen().catch(function () {}); } catch (e) { /* CSS layout still applies */ }
+      }
+    } else if (document.fullscreenElement && document.exitFullscreen) {
+      try { document.exitFullscreen().catch(function () {}); } catch (e) { /* ignore */ }
+    }
+    if (currentPdf) requestAnimationFrame(renderCurrentPage);
+  }
+
   function closeViewer() {
+    if (expanded) setExpanded(false);
+    newTabLink.hidden = true;
+    expandBtn.hidden = true;
     overlay.hidden = true;
     body.innerHTML = '';
     pager.hidden = true;
@@ -100,6 +132,9 @@
 
   function openOverlay(title) {
     lastFocused = document.activeElement;
+    currentTitle = title || '';
+    newTabLink.hidden = true;
+    expandBtn.hidden = true;
     titleEl.textContent = title || '';
     overlay.setAttribute('aria-label', title || 'תצוגת מסמך');
     overlay.hidden = false;
@@ -119,6 +154,9 @@
     openOverlay(title);
     body.innerHTML = '<iframe src="' + src + '" title="' + (title || 'תצוגה') + '"></iframe>';
     currentFrame = body.querySelector('iframe');
+    // Apps, sites and galleries can be opened in their own tab for more room.
+    newTabLink.href = src;
+    newTabLink.hidden = false;
     if (isLocalReader(src)) {
       navGroup.hidden = true;
       zoomGroup.hidden = false;
@@ -164,6 +202,7 @@
   }
 
   function renderCurrentPage() {
+    if (!currentPdf) return; // viewer was closed meanwhile
     body.innerHTML = '<div class="viewer-loading">טוען עמוד…</div>';
     currentPdf.getPage(currentPage).then(function (page) {
       var targetWidth = body.clientWidth || 760;
@@ -187,6 +226,7 @@
         wrapper.style.margin = '0 auto';
         wrapper.appendChild(canvas);
         body.appendChild(wrapper);
+        addTextLayer(page, viewport, wrapper, canvas);
         return page.getAnnotations({ intent: 'display' }).then(function (annotations) {
           annotations.forEach(function (ann) {
             var url = ann.url || ann.unsafeUrl;
@@ -219,11 +259,40 @@
     }).catch(function () {
       body.innerHTML = '<div class="viewer-loading">לא ניתן להציג עמוד זה.</div>';
     }).then(function () {
+      if (!currentPdf) return;
       pageIndicator.textContent = 'עמוד ' + currentPage + ' מתוך ' + currentPdf.numPages;
       prevBtn.disabled = currentPage <= 1;
       nextBtn.disabled = currentPage >= currentPdf.numPages;
       updateZoomLabel();
     });
+  }
+
+  // Invisible text over the canvas: lets screen readers read the page, and
+  // allows selecting / searching text. Pages that are only images have no
+  // text, so the canvas itself gets a descriptive label instead.
+  function addTextLayer(page, viewport, wrapper, canvas) {
+    if (!currentPdf) return;
+    var label = 'עמוד ' + currentPage + ' מתוך ' + currentPdf.numPages + (currentTitle ? ' — ' + currentTitle : '');
+    canvas.setAttribute('role', 'img');
+    canvas.setAttribute('aria-label', label);
+    if (!window.pdfjsLib || !window.pdfjsLib.renderTextLayer) return;
+    var layer = document.createElement('div');
+    layer.className = 'textLayer';
+    layer.setAttribute('lang', 'he');
+    layer.style.setProperty('--scale-factor', String(viewport.scale));
+    wrapper.appendChild(layer);
+    page.getTextContent().then(function (tc) {
+      if (!tc.items.some(function (it) { return it.str && it.str.trim(); })) { layer.remove(); return; }
+      var task = window.pdfjsLib.renderTextLayer({ textContentSource: tc, container: layer, viewport: viewport, textDivs: [] });
+      return task.promise.then(function () {
+        // text is now available to assistive technology; hide the picture of it
+        canvas.removeAttribute('role');
+        canvas.setAttribute('aria-hidden', 'true');
+        canvas.removeAttribute('aria-label');
+        layer.setAttribute('role', 'document');
+        layer.setAttribute('aria-label', label);
+      });
+    }).catch(function () { layer.remove(); });
   }
 
   function resolveDestPage(dest) {
@@ -242,6 +311,8 @@
 
   function openPdf(src, title) {
     openOverlay(title);
+    // On phones the viewer already fills the screen, unless real fullscreen exists.
+    expandBtn.hidden = window.innerWidth <= 640 && !document.fullscreenEnabled;
     body.innerHTML = '<div class="viewer-loading">טוען מסמך…</div>';
     ensurePdfJs(function () {
       withTimeout(window.pdfjsLib.getDocument(src).promise, 20000).then(function (pdf) {
