@@ -956,3 +956,5 @@ a.doc-link[download] {
 .viewer-caption span { display: block; }
 .viewer-caption .cap-title { font-weight: 700; font-size: 1.05rem; }
 .viewer-caption .cap-meta { color: #cfc8b8; font-size: 0.88rem; }
+
+.gallery-doc { margin: 0 0 22px; }
