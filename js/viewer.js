@@ -337,6 +337,7 @@
     if (it.w && it.h) { img.width = it.w; img.height = it.h; }
     img.draggable = false;
     fig.appendChild(img);
+    if (it.cap) { var fc = document.createElement('figcaption'); fc.className = 'viewer-caption'; fc.innerHTML = it.cap; fig.appendChild(fc); }
     body.appendChild(fig);
     pageIndicator.textContent = 'תמונה ' + (i + 1) + ' מתוך ' + g.items.length;
     prevBtn.disabled = i <= 0;
@@ -351,7 +352,8 @@
     var els = Array.prototype.slice.call(document.querySelectorAll('a[data-gallery="' + key + '"]'));
     var items = els.map(function (a) {
       var im = a.querySelector('img');
-      return { el: a, src: a.href, alt: im ? im.alt : '', w: +a.getAttribute('data-lw') || 0, h: +a.getAttribute('data-lh') || 0 };
+      var cap = a.closest('figure') && a.closest('figure').querySelector('figcaption');
+      return { el: a, src: a.href, alt: im ? im.alt : '', cap: cap ? cap.innerHTML : '', w: +a.getAttribute('data-lw') || 0, h: +a.getAttribute('data-lh') || 0 };
     });
     openOverlay(anchor.getAttribute('data-viewer-title') || 'גלריה');
     lastFocused = anchor;

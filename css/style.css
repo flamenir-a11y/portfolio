@@ -893,15 +893,18 @@ a.doc-link[download] {
 .gallery a:hover img, .gallery a:focus-visible img { transform: scale(1.03); }
 .gallery a:focus-visible { outline: 3px solid var(--color-text); outline-offset: 3px; }
 .gallery figcaption {
-  display: inline-block;
+  display: block;
   margin: 8px 0 0;
-  padding: 2px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.85);
+  padding: 4px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.88);
   color: var(--color-text);
   font-size: 0.9rem;
-  line-height: 1.5;
+  line-height: 1.45;
 }
+.gallery figcaption span { display: block; }
+.gallery .cap-title { font-weight: 700; font-size: 0.98rem; }
+.gallery .cap-meta { color: var(--color-text-muted); font-size: 0.85rem; }
 .work-list--single { grid-template-columns: 1fr; margin-bottom: 16px; padding-bottom: 8px; }
 @media (max-width: 640px) {
   .category-row--art { gap: 20px; }
@@ -940,3 +943,11 @@ a.doc-link[download] {
   border-color: transparent;
   color: #fff;
 }
+
+/* lightbox caption */
+.viewer-figure { flex-direction: column; gap: 10px; }
+.viewer-figure img { flex: 1 1 auto; min-height: 0; }
+.viewer-caption { flex: none; text-align: center; color: #f3efe6; font-size: 0.95rem; line-height: 1.45; }
+.viewer-caption span { display: block; }
+.viewer-caption .cap-title { font-weight: 700; font-size: 1.05rem; }
+.viewer-caption .cap-meta { color: #cfc8b8; font-size: 0.88rem; }
