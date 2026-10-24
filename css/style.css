@@ -839,3 +839,33 @@ html { scroll-behavior: smooth; }
     transform: none;
   }
 }
+
+/* ===== Links to the work itself (documents, apps, presentations): outlined in the
+   page's category color with a tinted fill, so they stand out from the card
+   (variant B, chosen 24.10.2026). ===== */
+.doc-link,
+button.doc-link,
+a.doc-link {
+  --doc-ink: color-mix(in srgb, var(--accent, var(--color-teal)) 76%, #000);
+  background: color-mix(in srgb, var(--accent, var(--color-teal)) 16%, #fff);
+  color: var(--doc-ink);
+  border: 2px solid var(--doc-ink);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 9px 17px;
+  transition: background 0.15s ease;
+}
+.doc-link:hover,
+.doc-link:focus-visible {
+  background: color-mix(in srgb, var(--accent, var(--color-teal)) 21%, #fff);
+  border-color: var(--doc-ink);
+}
+.doc-link:focus-visible { outline: 3px solid var(--color-text); outline-offset: 2px; }
+/* the secondary download link (CV) stays quiet */
+a.doc-link[download] {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid rgba(58, 54, 46, 0.35);
+  font-weight: 500;
+}
