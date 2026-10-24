@@ -4,7 +4,7 @@
   var ZOOM_MIN = 0.6, ZOOM_MAX = 2.4, ZOOM_STEP = 0.2;
   var overlay, body, titleEl, closeBtn, pager, navGroup, zoomGroup,
       prevBtn, nextBtn, pageIndicator, zoomOutBtn, zoomInBtn, zoomLevelEl, lastFocused,
-      newTabLink, expandBtn, expanded = false, currentTitle = '';
+      newTabLink, expandBtn, expanded = false, currentTitle = '', currentGallery = null;
 
   function ensurePdfJs(cb) {
     if (window.pdfjsLib) { cb(); return; }
@@ -94,6 +94,14 @@
       if (e.key === '+' || e.key === '=') zoomBy(ZOOM_STEP);
       if (e.key === '-') zoomBy(-ZOOM_STEP);
     });
+    var touchX = null, touchY = null;
+    body.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }, { passive: true });
+    body.addEventListener('touchend', function (e) {
+      if (!currentGallery || touchX === null) return;
+      var dx = e.changedTouches[0].clientX - touchX, dy = e.changedTouches[0].clientY - touchY;
+      touchX = touchY = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) goToPage(currentPage + (dx > 0 ? 1 : -1)); // same direction as the arrow keys
+    }, { passive: true });
     prevBtn.addEventListener('click', function () { goToPage(currentPage - 1); });
     nextBtn.addEventListener('click', function () { goToPage(currentPage + 1); });
     zoomInBtn.addEventListener('click', function () { zoomBy(ZOOM_STEP); });
@@ -125,6 +133,8 @@
     body.innerHTML = '';
     pager.hidden = true;
     document.body.style.overflow = '';
+    overlay.classList.remove('is-gallery');
+    currentGallery = null;
     currentPdf = null;
     currentFrame = null;
     if (lastFocused && lastFocused.focus) lastFocused.focus();
@@ -304,9 +314,54 @@
   }
 
   function goToPage(n) {
+    if (currentGallery) {
+      if (n >= 1 && n <= currentGallery.items.length) showGalleryItem(n - 1);
+      return;
+    }
     if (!currentPdf || n < 1 || n > currentPdf.numPages) return;
     currentPage = n;
     renderCurrentPage();
+  }
+
+  // ----- image gallery (art pages): same overlay, one picture at a time -----
+  function showGalleryItem(i) {
+    var g = currentGallery, it = g.items[i];
+    currentPage = i + 1;
+    lastFocused = it.el; // focus goes back to the picture that was last shown
+    body.innerHTML = '';
+    var fig = document.createElement('figure');
+    fig.className = 'viewer-figure';
+    var img = document.createElement('img');
+    img.src = it.src;
+    img.alt = it.alt;
+    if (it.w && it.h) { img.width = it.w; img.height = it.h; }
+    img.draggable = false;
+    fig.appendChild(img);
+    body.appendChild(fig);
+    pageIndicator.textContent = 'תמונה ' + (i + 1) + ' מתוך ' + g.items.length;
+    prevBtn.disabled = i <= 0;
+    nextBtn.disabled = i >= g.items.length - 1;
+    [i - 1, i + 1].forEach(function (k) { // warm the cache for the neighbours
+      if (g.items[k]) { var pre = new Image(); pre.src = g.items[k].src; }
+    });
+  }
+
+  function openGallery(anchor) {
+    var key = anchor.getAttribute('data-gallery');
+    var els = Array.prototype.slice.call(document.querySelectorAll('a[data-gallery="' + key + '"]'));
+    var items = els.map(function (a) {
+      var im = a.querySelector('img');
+      return { el: a, src: a.href, alt: im ? im.alt : '', w: +a.getAttribute('data-lw') || 0, h: +a.getAttribute('data-lh') || 0 };
+    });
+    openOverlay(anchor.getAttribute('data-viewer-title') || 'גלריה');
+    lastFocused = anchor;
+    overlay.classList.add('is-gallery');
+    expandBtn.hidden = window.innerWidth <= 640 && !document.fullscreenEnabled;
+    currentGallery = { items: items };
+    pager.hidden = false;
+    zoomGroup.hidden = true;
+    navGroup.hidden = items.length <= 1;
+    showGalleryItem(Math.max(0, els.indexOf(anchor)));
   }
 
   function openPdf(src, title) {
@@ -331,6 +386,8 @@
   document.addEventListener('DOMContentLoaded', function () {
     buildOverlay();
     document.addEventListener('click', function (e) {
+      var gal = e.target.closest('a[data-gallery]');
+      if (gal) { e.preventDefault(); openGallery(gal); return; }
       var trigger = e.target.closest('[data-viewer-src]');
       if (!trigger) return;
       e.preventDefault();

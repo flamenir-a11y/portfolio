@@ -869,3 +869,65 @@ a.doc-link[download] {
   border: 1px solid rgba(58, 54, 46, 0.35);
   font-weight: 500;
 }
+
+/* ===== Art gallery (masonry that keeps every work's own proportions) ===== */
+.category-row--art { gap: 32px; padding: 8px 0 56px; }
+.category-tile--cover { justify-content: flex-end; }
+.category-tile--cover .tile-body { width: 100%; }
+
+.gallery { column-width: 250px; column-gap: 16px; margin: 0 0 56px; }
+.gallery--wide { column-width: 420px; }
+.gallery figure { margin: 0 0 16px; break-inside: avoid; }
+.gallery a {
+  display: block;
+  line-height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(20, 18, 14, 0.25);
+}
+.gallery img { width: 100%; height: auto; display: block; transition: transform 0.3s ease; }
+.gallery a:hover img, .gallery a:focus-visible img { transform: scale(1.03); }
+.gallery a:focus-visible { outline: 3px solid var(--color-text); outline-offset: 3px; }
+.gallery figcaption {
+  display: inline-block;
+  margin: 8px 0 0;
+  padding: 2px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.work-list--single { grid-template-columns: 1fr; margin-bottom: 16px; padding-bottom: 8px; }
+@media (max-width: 640px) {
+  .category-row--art { gap: 20px; }
+  .gallery { column-width: 140px; column-gap: 10px; }
+  .gallery--wide { column-width: 260px; }
+  .gallery figure { margin-bottom: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { .gallery img { transition: none; } }
+
+/* lightbox (viewer in gallery mode) */
+.viewer-overlay.is-gallery .viewer-box { width: min(1100px, 100%); }
+.viewer-overlay.is-gallery .viewer-body { background: #17150f; align-items: stretch; padding: 12px; }
+.viewer-figure { margin: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.viewer-figure img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* exhibitions page: section headings and full-width panoramas */
+.gallery-heading { margin: 40px 0 18px; }
+.gallery-heading:first-of-type { margin-top: 8px; }
+.gallery-heading h2 { margin-bottom: 6px; }
+.gallery-heading h2, .gallery-heading p {
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9), 0 1px 14px rgba(255, 255, 255, 0.8);
+}
+.gallery-heading p { margin: 0; color: var(--color-text); font-size: 1.05rem; max-width: 640px; }
+.gallery .gallery-span { column-span: all; }
