@@ -870,26 +870,29 @@ a.doc-link[download] {
   font-weight: 500;
 }
 
-/* ===== Art gallery (masonry that keeps every work's own proportions) ===== */
+/* ===== Art gallery ===== */
 .category-row--art { gap: 32px; padding: 8px 0 56px; }
 .category-tile--cover { justify-content: flex-end; }
 .category-tile--cover .tile-body { width: 100%; }
 
-/* justified rows: every picture in a row has the same height, so portrait and
-   landscape works end up the same visual size (flex-grow/basis follow the ratio --r) */
-.gallery { --row-h: 260px; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px; margin: 0 0 56px; }
-.gallery--wide { --row-h: 320px; }
-.gallery figure { margin: 0; min-width: 0; flex: calc(var(--r) * 100) 1 calc(var(--r) * var(--row-h)); max-width: calc(var(--r) * var(--row-h) * 1.4); } /* a lone picture is never blown up to the full row */
-.gallery::after { content: ''; flex-grow: 1000000; } /* keeps the last row from stretching */
+/* uniform grid: every work sits in a square cell of the same size and is shown whole
+   (object-fit: contain), so portrait and landscape works get the same visual size */
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; align-items: start; margin: 0 0 56px; }
+.gallery--wide { grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); }
+.gallery figure { margin: 0; min-width: 0; }
 .gallery a {
-  display: block;
-  line-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  padding: 10px;
   overflow: hidden;
-  border-radius: 8px;
-  background: #fff;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.82);
   box-shadow: 0 3px 10px rgba(20, 18, 14, 0.25);
 }
-.gallery img { width: 100%; height: auto; display: block; transition: transform 0.3s ease; }
+.gallery--wide a { aspect-ratio: 4 / 3; }
+.gallery img { width: 100%; height: 100%; object-fit: contain; display: block; transition: transform 0.3s ease; }
 .gallery a:hover img, .gallery a:focus-visible img { transform: scale(1.03); }
 .gallery a:focus-visible { outline: 3px solid var(--color-text); outline-offset: 3px; }
 .gallery figcaption {
@@ -908,8 +911,8 @@ a.doc-link[download] {
 .work-list--single { grid-template-columns: 1fr; margin-bottom: 16px; padding-bottom: 8px; }
 @media (max-width: 640px) {
   .category-row--art { gap: 20px; }
-  .gallery { --row-h: 180px; gap: 10px; }
-  .gallery--wide { --row-h: 200px; }
+  .gallery { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .gallery--wide { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { .gallery img { transition: none; } }
 
@@ -935,7 +938,9 @@ a.doc-link[download] {
   text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9), 0 1px 14px rgba(255, 255, 255, 0.8);
 }
 .gallery-heading p { margin: 0; color: var(--color-text); font-size: 1.05rem; max-width: 640px; }
-.gallery .gallery-span { flex: 1 1 100%; max-width: none; }
+.gallery .gallery-span { grid-column: 1 / -1; }
+.gallery .gallery-span a { aspect-ratio: auto; padding: 6px; }
+.gallery .gallery-span img { height: auto; }
 
 .gallery-nav { margin: -6px 0 22px; }
 .jump-links a[aria-current="page"] {
